@@ -2,7 +2,7 @@ import os
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = os.getenv("8204876661:AAGDXnj_kQ_UjTeIQCTyIy8ED5frm3Tn4GY")
+TOKEN = os.getenv("BOT_TOKEN")
 
 def ler_conteudo(nome):
     caminho = f"conteudos/{nome}.txt"
