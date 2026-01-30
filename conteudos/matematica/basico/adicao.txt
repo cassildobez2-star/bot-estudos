@@ -1,1 +1,45 @@
+ADIÇÃO
 
+1) Ideia inicial
+Adicionar significa combinar quantidades para obter uma quantidade maior.
+
+2) Definição formal simples
+Dados dois números naturais a e b, a soma a + b representa o total obtido ao juntar a com b.
+
+3) Propriedades fundamentais
+• Comutatividade: a + b = b + a
+• Associatividade
+• Elemento neutro: a + 0 = a
+
+4) Exemplos trabalhados
+
+Exemplo 1  
+198 + 2  
+Raciocínio: completa a centena.  
+Resultado: 200
+
+Exemplo 2  
+475 + 25  
+Raciocínio: completa 500.  
+Resultado: 500
+
+Exemplo 3  
+999 + 37  
+Raciocínio: 999 + 1 = 1000, restam 36.  
+Resultado: 1036
+
+Exemplo 4  
+350 + 650  
+Raciocínio direto.  
+Resultado: 1000
+
+Exemplo 5  
+123 + 77  
+Raciocínio: completa 200.  
+Resultado: 200
+
+5) Demonstração intuitiva
+Podemos reorganizar parcelas livremente, pois o total final não depende da ordem.
+
+6) Conclusão
+Somar bem é saber reorganizar números de forma inteligente.
