@@ -1,1 +1,38 @@
+NÚMEROS NATURAIS
 
+1) Ideia inicial
+Antes de qualquer conta, precisamos de números. Os números naturais surgem da necessidade de contar.
+
+2) Definição formal simples
+Os números naturais são:
+ℕ = {0, 1, 2, 3, 4, 5, …}
+
+Eles representam quantidades inteiras e não negativas.
+
+3) Propriedades fundamentais
+• Possuem ordem (0 < 1 < 2 < 3 < …)
+• Não possuem frações ou decimais
+• São infinitos
+
+4) Exemplos trabalhados
+
+Exemplo 1  
+Os números usados para contar pessoas são naturais.
+
+Exemplo 2  
+O número 0 representa ausência de quantidade.
+
+Exemplo 3  
+−1 não é natural, pois é negativo.
+
+Exemplo 4  
+2,5 não é natural, pois não é inteiro.
+
+Exemplo 5  
+1000000 também é natural, mesmo sendo grande.
+
+5) Demonstração intuitiva
+Sempre que contamos objetos inteiros, usamos números naturais. Não existe “meia pessoa” ou “três quartos de objeto” nesse contexto.
+
+6) Conclusão
+Os números naturais formam a base de toda a matemática escolar.
