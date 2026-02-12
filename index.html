@@ -3,149 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MatemáticaBC.com - Calculadora Avançada por Tópicos</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<title>MatemáticaBC.com</title>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
 
 <style>
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:white;}
-header{text-align:center;padding:15px;font-size:22px;font-weight:bold;}
-.nav{display:flex;justify-content:space-around;background:#1f4068;}
-.nav button{flex:1;padding:12px;border:none;background:none;color:white;font-weight:bold;cursor:pointer;transition:0.2s;}
-.nav button.active{background:#00c6ff;color:black;}
-.section{display:none;padding:20px;}
-.section.active{display:block;}
-input, select{width:100%;padding:12px;border-radius:10px;border:none;margin-bottom:10px;font-size:16px;}
-button.calc{width:100%;padding:12px;border:none;border-radius:10px;background:#00c6ff;font-weight:bold;cursor:pointer;margin-bottom:10px;}
-.result{margin-top:15px;background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;min-height:40px;font-size:16px;word-wrap:break-word;}
-.example-button{width:100%;margin-bottom:5px;padding:10px;border-radius:8px;border:none;background:#203a43;color:white;cursor:pointer;text-align:left;}
-.example-button:hover{background:#00c6ff;color:black;}
-h3{margin-top:20px;}
+body{
+    margin:0;
+    font-family:Arial;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    color:white;
+}
+header{
+    text-align:center;
+    padding:15px;
+    font-size:22px;
+    font-weight:bold;
+}
+.container{
+    padding:20px;
+}
+input, select{
+    width:100%;
+    padding:12px;
+    border-radius:10px;
+    border:none;
+    margin-bottom:10px;
+    font-size:16px;
+}
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#00c6ff;
+    font-weight:bold;
+    cursor:pointer;
+    margin-bottom:10px;
+}
+.result{
+    margin-top:15px;
+    background:rgba(255,255,255,0.1);
+    padding:15px;
+    border-radius:15px;
+    min-height:40px;
+    word-wrap:break-word;
+}
+.example{
+    background:#203a43;
+}
 </style>
 </head>
 <body>
 
-<header>📐 MatemáticaBC.com - Calculadora Avançada</header>
+<header>📐 MatemáticaBC.com</header>
 
-<div class="nav">
-    <button onclick="showTab('equacoes', this)" class="active">Equações</button>
-    <button onclick="showTab('calculo', this)">Cálculo</button>
-    <button onclick="showTab('geometria', this)">Geometria</button>
-</div>
+<div class="container">
 
-<!-- ===== Aba Equações ===== -->
-<div id="equacoes" class="section active">
-    <h3>Escolha o tipo de equação:</h3>
-    <button onclick="showSubcategory('polinomial')" class="example-button">Polinomial</button>
-    <button onclick="showSubcategory('logaritmica')" class="example-button">Logarítmica</button>
-    <button onclick="showSubcategory('exponencial')" class="example-button">Exponencial</button>
-    <button onclick="showSubcategory('trigonometrica')" class="example-button">Trigonométrica</button>
+<select id="modo">
+<option value="equacao">Resolver Equação</option>
+<option value="derivar">Derivar</option>
+<option value="integrar">Integrar</option>
+<option value="limite">Limite</option>
+</select>
 
-    <div id="examplesContainer"></div>
-</div>
+<input type="text" id="entrada" placeholder="Digite aqui. Ex: x^2 - 4 = 0">
 
-<!-- ===== Aba Cálculo ===== -->
-<div id="calculo" class="section">
-    <select id="calcMode">
-        <option value="derivar">Derivar</option>
-        <option value="integrar">Integrar</option>
-        <option value="limite">Limite</option>
-    </select>
-    <select id="calcExample">
-        <option value="x^3 + 11*x">x^3 + 11*x</option>
-        <option value="x^2 + 5*x + 1">x^2 + 5*x + 1</option>
-        <option value="sin(x)/x">sin(x)/x</option>
-    </select>
-    <input type="text" id="limitePoint" placeholder="Valor para limite (ex: 2)" style="display:none;">
-    <button class="calc" onclick="calcCalculus()">Calcular</button>
-    <div class="result" id="calcResult"></div>
-</div>
+<input type="text" id="valorLimite" placeholder="Valor do limite (ex: 2)" style="display:none;">
 
-<!-- ===== Aba Geometria ===== -->
-<div id="geometria" class="section">
-    <input type="number" id="lado" placeholder="Lado do Cubo">
-    <button class="calc" onclick="volumeCubo()">Calcular Volume</button>
-    <div class="result" id="geoResult"></div>
+<button onclick="calcular()">Calcular</button>
+
+<h3>Exemplos:</h3>
+
+<button class="example" onclick="setExemplo('x^2 - 4 = 0')">x² - 4 = 0</button>
+<button class="example" onclick="setExemplo('x^3 + 11*x')">Derivada: x³ + 11x</button>
+<button class="example" onclick="setExemplo('sin(x)/x')">Limite: sin(x)/x</button>
+
+<div class="result" id="resultado"></div>
+
 </div>
 
 <script>
-// ---------- Navegação por abas ----------
-function showTab(id, btn){
-    document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
-    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-    btn.classList.add('active');
 
-    if(id==="calculo"){
-        document.getElementById("calcMode").addEventListener("change", function(){
-            document.getElementById("limitePoint").style.display = this.value==="limite"?"block":"none";
-        });
+const modoSelect = document.getElementById("modo");
+const limiteInput = document.getElementById("valorLimite");
+
+modoSelect.addEventListener("change", function(){
+    if(this.value === "limite"){
+        limiteInput.style.display = "block";
+    } else {
+        limiteInput.style.display = "none";
     }
+});
+
+function setExemplo(valor){
+    document.getElementById("entrada").value = valor;
 }
 
-// ---------- Equações com exemplos ----------
-const examples = {
-    polinomial: ["x^2 - 4 = 0", "x^3 - 3*x + 2 = 0"],
-    logaritmica: ["log(x) - 2 = 0", "ln(x+1) - 3 = 0"],
-    exponencial: ["2^x - 8 = 0", "e^x - 5 = 0"],
-    trigonometrica: ["sin(x) - 1/2 = 0", "cos(x) - 0 = 0"]
-};
+function calcular(){
+    const modo = modoSelect.value;
+    let expr = document.getElementById("entrada").value;
+    const resultado = document.getElementById("resultado");
 
-function showSubcategory(category){
-    const container = document.getElementById("examplesContainer");
-    container.innerHTML = `<h3>Exemplos (${category})</h3>`;
-    examples[category].forEach(ex => {
-        const btn = document.createElement("button");
-        btn.className="example-button";
-        btn.innerText=ex;
-        btn.onclick=()=>solveExample(ex);
-        container.appendChild(btn);
-    });
-}
-
-function solveExample(expr){
     try{
-        let eq = expr.replace("=", "-(")+")"; // converte a equação para Algebrite
-        let res = Algebrite.run("roots("+eq+")");
-        const container = document.getElementById("examplesContainer");
-        container.innerHTML += `<div class="result">Resultado: ${res}</div>`;
-    }catch{
-        const container = document.getElementById("examplesContainer");
-        container.innerHTML += `<div class="result">Erro ao calcular</div>`;
-    }
-}
 
-// ---------- Cálculo ----------
-function calcCalculus(){
-    try{
-        let expr = document.getElementById("calcExample").value;
-        let mode = document.getElementById("calcMode").value;
-        let output = document.getElementById("calcResult");
+        if(modo === "equacao"){
 
-        if(mode==="derivar"){
-            output.innerText = Algebrite.run("d("+expr+", x)");
-        } else if(mode==="integrar"){
-            output.innerText = Algebrite.run("integral("+expr+", x)");
-        } else if(mode==="limite"){
-            let ponto = document.getElementById("limitePoint").value;
-            if(!ponto){ output.innerText="Informe o ponto para o limite"; return; }
-            let limiteExpr = "limit("+expr+", x,"+ponto+")";
-            output.innerText = Algebrite.run(limiteExpr);
+            if(!expr.includes("=")){
+                resultado.innerText = "Use formato: x^2 - 4 = 0";
+                return;
+            }
+
+            let partes = expr.split("=");
+            let esquerda = partes[0];
+            let direita = partes[1];
+
+            let equacao = esquerda + "-(" + direita + ")";
+            resultado.innerText = Algebrite.run("roots(" + equacao + ")");
+
         }
-    }catch{
-        document.getElementById("calcResult").innerText = "Erro no cálculo";
+
+        else if(modo === "derivar"){
+            resultado.innerText = Algebrite.run("d(" + expr + ", x)");
+        }
+
+        else if(modo === "integrar"){
+            resultado.innerText = Algebrite.run("integral(" + expr + ", x)");
+        }
+
+        else if(modo === "limite"){
+            let ponto = limiteInput.value;
+
+            if(!ponto){
+                resultado.innerText = "Digite o valor do limite.";
+                return;
+            }
+
+            resultado.innerText = Algebrite.run("limit(" + expr + ", x, " + ponto + ")");
+        }
+
+    }catch(e){
+        resultado.innerText = "Erro na expressão. Verifique a sintaxe.";
     }
 }
 
-// ---------- Geometria ----------
-function volumeCubo(){
-    try{
-        let lado = parseFloat(document.getElementById("lado").value);
-        document.getElementById("geoResult").innerText = "Volume = " + (lado**3);
-    }catch{
-        document.getElementById("geoResult").innerText = "Erro no cálculo";
-    }
-}
 </script>
+
 </body>
-</html>
+    </html>
