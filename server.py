@@ -5,22 +5,20 @@ from sympy.parsing.sympy_parser import parse_expr
 import openai
 import os
 
-# ===== Configurações =====
 app = Flask(__name__)
-CORS(app)  # Permitir chamadas do frontend
+CORS(app)
 
 # Símbolos padrão
 x, y, z = symbols('x y z')
 
-# Chave OpenAI (armazenar como variável de ambiente no Railway)
+# Chave OpenAI
 openai.api_key = os.environ.get("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")
 
-# ===== Rotas =====
 @app.route("/")
 def home():
     return "MatematicaBC API online 🚀"
 
-# ===== Calculadora =====
+# Calculadora
 @app.route("/calcular", methods=["POST"])
 def calcular():
     data = request.json
@@ -29,7 +27,6 @@ def calcular():
     valor = data.get("valor")
 
     try:
-        # Substitui ^ por ** e converte para SymPy
         expr = parse_expr(expressao.replace("^", "**"))
 
         if modo == "equacao":
@@ -50,7 +47,7 @@ def calcular():
     except Exception as e:
         return jsonify({"erro": str(e)})
 
-# ===== IA Chat atualizado para OpenAI >=1.0.0 =====
+# Chat IA atualizado para OpenAI >=1.0.0
 @app.route("/ia", methods=["POST"])
 def ia():
     data = request.json
@@ -60,10 +57,12 @@ def ia():
         return jsonify({"resposta":"Digite uma pergunta válida."})
 
     try:
-        # Nova interface OpenAI >=1.0.0
         resposta = openai.chat.completions.create(
             model="gpt-4",
-            messages=[{"role":"user", "content": pergunta}],
+            messages=[
+                {"role": "system", "content": "Você é um assistente de matemática."},
+                {"role": "user", "content": pergunta}
+            ],
             max_tokens=200
         )
         texto = resposta.choices[0].message.content
@@ -72,6 +71,5 @@ def ia():
     except Exception as e:
         return jsonify({"resposta": f"Erro IA: {str(e)}"})
 
-# ===== Rodar app =====
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
