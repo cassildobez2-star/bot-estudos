@@ -58,7 +58,7 @@ def ia():
 
     try:
         resposta = openai.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",
             messages=[
                 {"role": "system", "content": "Você é um assistente de matemática."},
                 {"role": "user", "content": pergunta}
