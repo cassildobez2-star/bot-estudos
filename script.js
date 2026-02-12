@@ -1,44 +1,49 @@
-<script>
+// Importar bibliotecas
+const express = require("express");
+const fetch = require("node-fetch"); // Para fazer requisições HTTP
+const cors = require("cors");         // Para permitir chamadas do frontend
+require("dotenv").config();           // Para ler a chave do arquivo .env
 
-let mode = "basica";
+// Criar app Express
+const app = express();
 
-function setMode(newMode){
-    mode = newMode;
-    document.getElementById("output").innerText = "Modo: " + newMode;
-}
+// Middlewares
+app.use(cors());              // Permite que qualquer frontend acesse
+app.use(express.json());      // Permite ler JSON no corpo da requisição
 
-function calculate() {
-    const expr = document.getElementById("expression").value;
-    const output = document.getElementById("output");
+// Rota principal da IA
+app.post("/api/solve", async (req, res) => {
+    const { prompt } = req.body; // Recebe o texto do usuário
 
     try {
+        // Chamada para OpenAI API
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${process.env.OPENAI_API_KEY}` // chave segura no Railway
+            },
+            body: JSON.stringify({
+                model: "gpt-4",
+                messages: [
+                    { role: "system", content: "Você é um professor de matemática avançada. Explique passo a passo." },
+                    { role: "user", content: prompt }
+                ],
+                max_tokens: 500
+            })
+        });
 
-        if(mode === "calculo-derivada"){
-            output.innerText = math.derivative(expr, 'x').toString();
-        }
+        const data = await response.json();
 
-        else if(mode === "calculo-integral"){
-            // Integral numérica simples
-            const f = math.compile(expr);
-            let sum = 0;
-            let a = 0;
-            let b = 10;
-            let step = 0.01;
+        // Envia a resposta da OpenAI para o frontend
+        res.json({ answer: data.choices[0].message.content });
 
-            for(let x=a; x<=b; x+=step){
-                sum += f.evaluate({x:x}) * step;
-            }
-
-            output.innerText = "Integral aproximada (0 a 10): " + sum;
-        }
-
-        else {
-            output.innerText = math.evaluate(expr);
-        }
-
-    } catch(err){
-        output.innerText = "Erro na expressão";
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ error: "Erro ao consultar OpenAI" });
     }
-}
+});
 
-</script>
+// Porta do servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Servidor rodando na porta ${PORT}`));
