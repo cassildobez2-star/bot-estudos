@@ -50,7 +50,7 @@ def calcular():
     except Exception as e:
         return jsonify({"erro": str(e)})
 
-# ===== IA Chat =====
+# ===== IA Chat atualizado para OpenAI >=1.0.0 =====
 @app.route("/ia", methods=["POST"])
 def ia():
     data = request.json
@@ -60,7 +60,8 @@ def ia():
         return jsonify({"resposta":"Digite uma pergunta válida."})
 
     try:
-        resposta = openai.ChatCompletion.create(
+        # Nova interface OpenAI >=1.0.0
+        resposta = openai.chat.completions.create(
             model="gpt-4",
             messages=[{"role":"user", "content": pergunta}],
             max_tokens=200
