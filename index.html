@@ -4,7 +4,7 @@ async function calcular(){
     const expressao = document.getElementById("entrada").value;
     const valor = document.getElementById("valorLimite").value;
 
-    const resposta = await fetch("https://railway.com/project/347287a2-7e13-4794-a0e3-8b8c932e7205/service/e2f45690-f6c5-49bf-b566-3fb55d0e4eb5?environmentId=06d2c674-4fb9-4c19-80f3-f136c8ff4de8/calcular", {
+    const resposta = await fetch("https://bot-estudos-production.up.railway.app/calcular", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
