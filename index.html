@@ -1,61 +1,45 @@
 <!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Calculadora Científica</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora Matemática Pro</title>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
-    <link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="calculator">
-    <h1>Calculadora Científica</h1>
-    <input type="text" id="display">
+<div class="app">
 
-    <div class="buttons">
+    <header>
+        <h1>📐 Calculadora Matemática Pro</h1>
+    </header>
 
-        <!-- Funções científicas -->
-        <button onclick="append('sin(')">sin</button>
-        <button onclick="append('cos(')">cos</button>
-        <button onclick="append('tan(')">tan</button>
-        <button onclick="append('sqrt(')">√</button>
-
-        <button onclick="append('log(')">log</button>
-        <button onclick="append('ln(')">ln</button>
-        <button onclick="append('^')">^</button>
-        <button onclick="append('pi')">π</button>
-
-        <button onclick="append('derivative(')">d/dx</button>
-        <button onclick="append('integrate(')">∫</button>
-        <button onclick="append('x')">x</button>
-        <button onclick="clearDisplay()">C</button>
-
-        <!-- Números -->
-        <button onclick="append('7')">7</button>
-        <button onclick="append('8')">8</button>
-        <button onclick="append('9')">9</button>
-        <button onclick="append('/')">÷</button>
-
-        <button onclick="append('4')">4</button>
-        <button onclick="append('5')">5</button>
-        <button onclick="append('6')">6</button>
-        <button onclick="append('*')">×</button>
-
-        <button onclick="append('1')">1</button>
-        <button onclick="append('2')">2</button>
-        <button onclick="append('3')">3</button>
-        <button onclick="append('-')">−</button>
-
-        <button onclick="append('0')">0</button>
-        <button onclick="append('.')">.</button>
-        <button onclick="calculate()">=</button>
-        <button onclick="append('+')">+</button>
-
+    <div class="menu">
+        <button onclick="setMode('basica')">Básica</button>
+        <button onclick="setMode('algebra')">Álgebra</button>
+        <button onclick="setMode('calculo')">Cálculo</button>
+        <button onclick="setMode('trig')">Trigonometria</button>
+        <button onclick="setMode('geoAnalitica')">Geo Analítica</button>
+        <button onclick="setMode('geoEspacial')">Geo Espacial</button>
     </div>
+
+    <div class="input-area">
+        <input type="text" id="expression" placeholder="Digite sua expressão...">
+        <button onclick="calculate()">Calcular</button>
+    </div>
+
+    <div id="extraOptions"></div>
+
+    <div class="result">
+        <h2>Resultado:</h2>
+        <div id="output"></div>
+    </div>
+
 </div>
 
 <script src="script.js"></script>
 </body>
-            </html>
+</html>
