@@ -2,8 +2,8 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from sympy import symbols, diff, integrate, limit, solve
 from sympy.parsing.sympy_parser import parse_expr
-import openai
 import os
+import requests
 
 app = Flask(__name__)
 CORS(app)
@@ -11,14 +11,16 @@ CORS(app)
 # Símbolos padrão
 x, y, z = symbols('x y z')
 
-# Chave OpenAI
-openai.api_key = os.environ.get("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")
+# Token Hugging Face (adicione no Railway como HF_TOKEN)
+HF_TOKEN = os.environ.get("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")
+HF_MODEL = "tiiuae/falcon-7b-instruct"
 
+# ===== Rotas =====
 @app.route("/")
 def home():
     return "MatematicaBC API online 🚀"
 
-# Calculadora
+# ===== Calculadora =====
 @app.route("/calcular", methods=["POST"])
 def calcular():
     data = request.json
@@ -47,29 +49,34 @@ def calcular():
     except Exception as e:
         return jsonify({"erro": str(e)})
 
-# Chat IA atualizado para OpenAI >=1.0.0
+# ===== Função para gerar resposta IA Open-Source =====
+def gerar_resposta_open_source(pergunta):
+    url = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    payload = {
+        "inputs": pergunta,
+        "parameters": {"max_new_tokens": 200}
+    }
+    response = requests.post(url, headers=headers, json=payload)
+    data = response.json()
+    if "error" in data:
+        raise Exception(data["error"])
+    return data[0]["generated_text"]
+
+# ===== Rota Chat IA =====
 @app.route("/ia", methods=["POST"])
-def ia():
+def ia_open_source():
     data = request.json
     pergunta = data.get("pergunta")
-
     if not pergunta:
         return jsonify({"resposta":"Digite uma pergunta válida."})
 
     try:
-        resposta = openai.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Você é um assistente de matemática."},
-                {"role": "user", "content": pergunta}
-            ],
-            max_tokens=200
-        )
-        texto = resposta.choices[0].message.content
+        texto = gerar_resposta_open_source(pergunta)
         return jsonify({"resposta": texto})
-
     except Exception as e:
         return jsonify({"resposta": f"Erro IA: {str(e)}"})
 
+# ===== Rodar app =====
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=8000)
