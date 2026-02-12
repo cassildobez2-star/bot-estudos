@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora Matemática Pro</title>
+<title>Calculadora Matemática Interativa</title>
 
+<!-- Bibliotecas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
 
 <style>
 body{
@@ -35,6 +37,7 @@ header{
     background:none;
     color:white;
     font-weight:bold;
+    cursor:pointer;
 }
 
 .nav button.active{
@@ -66,6 +69,7 @@ button.calc{
     border-radius:10px;
     background:#00c6ff;
     font-weight:bold;
+    cursor:pointer;
 }
 
 .result{
@@ -79,7 +83,7 @@ button.calc{
 
 <body>
 
-<header>📐 Calculadora Matemática Pro</header>
+<header>📐 Calculadora Matemática Interativa</header>
 
 <div class="nav">
     <button onclick="showTab('basica', this)" class="active">Básica</button>
@@ -98,14 +102,20 @@ button.calc{
 <!-- Álgebra -->
 <div id="algebra" class="section">
     <input type="text" id="algebraInput" placeholder="Ex: x^2 - 4">
+    <input type="text" id="userAnswer" placeholder="Sua resposta">
     <button class="calc" onclick="solveEquation()">Resolver</button>
+    <button class="calc" onclick="corrigir()">Corrigir Resposta</button>
     <div class="result" id="algebraResult"></div>
 </div>
 
 <!-- Cálculo -->
 <div id="calculo" class="section">
+    <select id="calcMode">
+        <option value="derivar">Derivar</option>
+        <option value="integrar">Integrar</option>
+    </select>
     <input type="text" id="calcInput" placeholder="Ex: x^3">
-    <button class="calc" onclick="derivar()">Derivar</button>
+    <button class="calc" onclick="calcCalculus()">Calcular</button>
     <div class="result" id="calcResult"></div>
 </div>
 
@@ -117,7 +127,7 @@ button.calc{
 </div>
 
 <script>
-
+// Navegação por abas
 function showTab(id, btn){
     document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
     document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
@@ -125,6 +135,7 @@ function showTab(id, btn){
     btn.classList.add('active');
 }
 
+// Básica
 function calcBasic(){
     try{
         let v = document.getElementById("basicInput").value;
@@ -134,6 +145,7 @@ function calcBasic(){
     }
 }
 
+// Álgebra
 function solveEquation(){
     try{
         let eq = document.getElementById("algebraInput").value;
@@ -144,23 +156,40 @@ function solveEquation(){
     }
 }
 
-function derivar(){
+function corrigir(){
+    const respostaUsuario = document.getElementById("userAnswer").value;
+    const resultadoCorreto = math.evaluate(document.getElementById("algebraInput").value);
+    if(respostaUsuario == resultadoCorreto){
+        alert("✅ Correto!");
+    } else {
+        alert("❌ Errado! Resposta correta: " + resultadoCorreto);
+    }
+}
+
+// Cálculo
+function calcCalculus(){
     try{
         let expr = document.getElementById("calcInput").value;
-        document.getElementById("calcResult").innerText =
-            math.derivative(expr, 'x').toString();
+        let mode = document.getElementById("calcMode").value;
+        let output = document.getElementById("calcResult");
+
+        if(mode === "derivar"){
+            output.innerText = Algebrite.run("d(" + expr + ", x)");
+        } else if(mode === "integrar"){
+            output.innerText = Algebrite.run("integral(" + expr + ", x)");
+        }
     }catch{
         document.getElementById("calcResult").innerText = "Erro";
     }
 }
 
+// Geometria
 function volumeCubo(){
     let lado = document.getElementById("lado").value;
     document.getElementById("geoResult").innerText =
         "Volume = " + (lado**3);
 }
-
 </script>
 
 </body>
-        </html>
+</html>
