@@ -12,7 +12,7 @@ CORS(app)
 x, y, z = symbols('x y z')
 
 # Token Hugging Face (adicione no Railway como HF_TOKEN)
-HF_TOKEN = os.environ.get("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")
+HF_TOKEN = os.environ.get("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")
 HF_MODEL = "tiiuae/falcon-7b-instruct"
 
 # ===== Rotas =====
