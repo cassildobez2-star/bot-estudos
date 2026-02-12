@@ -1,175 +1,26 @@
-<!DOCTYPE html>
-<html lang="pt">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MatemáticaBC.com</title>
+async function calcular(){
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
+    const modo = document.getElementById("modo").value;
+    const expressao = document.getElementById("entrada").value;
+    const valor = document.getElementById("valorLimite").value;
 
-<style>
-body{
-    margin:0;
-    font-family:Arial;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
-}
-header{
-    text-align:center;
-    padding:15px;
-    font-size:22px;
-    font-weight:bold;
-}
-.container{
-    padding:20px;
-}
-input, select{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    margin-bottom:10px;
-    font-size:16px;
-}
-button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#00c6ff;
-    font-weight:bold;
-    cursor:pointer;
-    margin-bottom:10px;
-}
-.result{
-    margin-top:15px;
-    background:rgba(255,255,255,0.1);
-    padding:15px;
-    border-radius:15px;
-    min-height:40px;
-    word-wrap:break-word;
-}
-.example{
-    background:#203a43;
-}
-</style>
-</head>
-<body>
+    const resposta = await fetch("https://railway.com/project/347287a2-7e13-4794-a0e3-8b8c932e7205/service/e2f45690-f6c5-49bf-b566-3fb55d0e4eb5?environmentId=06d2c674-4fb9-4c19-80f3-f136c8ff4de8/calcular", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            modo: modo,
+            expressao: expressao,
+            valor: valor
+        })
+    });
 
-<header>📐 MatemáticaBC.com</header>
+    const dados = await resposta.json();
 
-<div class="container">
-
-<select id="modo">
-<option value="equacao">Resolver Equação</option>
-<option value="derivar">Derivar</option>
-<option value="integrar">Integrar</option>
-<option value="limite">Limite</option>
-</select>
-
-<input type="text" id="entrada" placeholder="Digite aqui. Ex: x^2 - 4 = 0">
-
-<input type="text" id="valorLimite" placeholder="Valor do limite (ex: 2)" style="display:none;">
-
-<button onclick="calcular()">Calcular</button>
-
-<h3>Exemplos:</h3>
-
-<button class="example" onclick="setExemplo('x^2 - 4 = 0')">x² - 4 = 0</button>
-<button class="example" onclick="setExemplo('x^3 + 11*x')">Derivada: x³ + 11x</button>
-<button class="example" onclick="setExemplo('sin(x)/x')">Limite: sin(x)/x</button>
-
-<div class="result" id="resultado"></div>
-
-</div>
-
-<script>
-
-const modoSelect = document.getElementById("modo");
-const limiteInput = document.getElementById("valorLimite");
-
-modoSelect.addEventListener("change", function(){
-    if(this.value === "limite"){
-        limiteInput.style.display = "block";
+    if(dados.resultado){
+        document.getElementById("resultado").innerText = dados.resultado;
     } else {
-        limiteInput.style.display = "none";
-    }
-});
-
-function setExemplo(valor){
-    document.getElementById("entrada").value = valor;
-}
-
-function limparExpressao(expr){
-
-    expr = expr.replace(/√/g, "sqrt");
-    expr = expr.replace(/sen/g, "sin");
-    expr = expr.replace(/ln/g, "log");
-    expr = expr.replace(/,/g, ".");
-    
-    // transforma 2x em 2*x
-    expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
-
-    return expr;
-}
-
-function calcular(){
-
-    const modo = modoSelect.value;
-    let expr = document.getElementById("entrada").value;
-    const resultado = document.getElementById("resultado");
-
-    try{
-
-        expr = limparExpressao(expr);
-
-        if(modo === "equacao"){
-
-            if(!expr.includes("=")){
-                resultado.innerText = "Use formato: x^2 - 4 = 0";
-                return;
-            }
-
-            let partes = expr.split("=");
-            let esquerda = partes[0];
-            let direita = partes[1];
-
-            esquerda = limparExpressao(esquerda);
-            direita = limparExpressao(direita);
-
-            let equacao = esquerda + "-(" + direita + ")";
-            resultado.innerText = Algebrite.run("roots(" + equacao + ")");
-
-        }
-
-        else if(modo === "derivar"){
-            resultado.innerText = Algebrite.run("d(" + expr + ", x)");
-        }
-
-        else if(modo === "integrar"){
-            resultado.innerText = Algebrite.run("integral(" + expr + ", x)");
-        }
-
-        else if(modo === "limite"){
-            let ponto = document.getElementById("valorLimite").value;
-
-            if(!ponto){
-                resultado.innerText = "Digite o valor do limite.";
-                return;
-            }
-
-            ponto = limparExpressao(ponto);
-
-            resultado.innerText = Algebrite.run("limit(" + expr + ", x, " + ponto + ")");
-        }
-
-    }catch(e){
-        console.log(e);
-        resultado.innerText = "Erro real na expressão matemática.";
+        document.getElementById("resultado").innerText = dados.erro;
     }
 }
-
-</script>
-
-</body>
-    </html>
