@@ -51,16 +51,27 @@ def calcular():
 
 # ===== Função para gerar resposta IA Open-Source =====
 def gerar_resposta_open_source(pergunta):
-    url = f"https://api-inference.huggingface.co/models/{HF_MODEL}"
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    url = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
+
+    headers = {
+        "Authorization": f"Bearer {HF_TOKEN}",
+        "Content-Type": "application/json"
+    }
+
     payload = {
         "inputs": pergunta,
-        "parameters": {"max_new_tokens": 200}
+        "parameters": {
+            "max_new_tokens": 200,
+            "temperature": 0.7
+        }
     }
+
     response = requests.post(url, headers=headers, json=payload)
     data = response.json()
-    if "error" in data:
+
+    if isinstance(data, dict) and "error" in data:
         raise Exception(data["error"])
+
     return data[0]["generated_text"]
 
 # ===== Rota Chat IA =====
