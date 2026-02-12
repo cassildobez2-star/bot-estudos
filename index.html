@@ -8,70 +8,16 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
 
 <style>
-body{
-    margin:0;
-    font-family:Arial, sans-serif;
-    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
-    color:white;
-}
-header{
-    text-align:center;
-    padding:15px;
-    font-size:22px;
-    font-weight:bold;
-}
-.nav{
-    display:flex;
-    justify-content:space-around;
-    background:#1f4068;
-}
-.nav button{
-    flex:1;
-    padding:12px;
-    border:none;
-    background:none;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.2s;
-}
-.nav button.active{
-    background:#00c6ff;
-    color:black;
-}
-.section{
-    display:none;
-    padding:20px;
-}
-.section.active{
-    display:block;
-}
-input{
-    width:100%;
-    padding:12px;
-    border-radius:10px;
-    border:none;
-    margin-bottom:10px;
-    font-size:16px;
-}
-button.calc{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:10px;
-    background:#00c6ff;
-    font-weight:bold;
-    cursor:pointer;
-    margin-bottom:10px;
-}
-.result{
-    margin-top:15px;
-    background:rgba(255,255,255,0.1);
-    padding:15px;
-    border-radius:15px;
-    min-height:40px;
-    font-size:16px;
-}
+body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);color:white;}
+header{text-align:center;padding:15px;font-size:22px;font-weight:bold;}
+.nav{display:flex;justify-content:space-around;background:#1f4068;}
+.nav button{flex:1;padding:12px;border:none;background:none;color:white;font-weight:bold;cursor:pointer;transition:0.2s;}
+.nav button.active{background:#00c6ff;color:black;}
+.section{display:none;padding:20px;}
+.section.active{display:block;}
+input, select{width:100%;padding:12px;border-radius:10px;border:none;margin-bottom:10px;font-size:16px;}
+button.calc{width:100%;padding:12px;border:none;border-radius:10px;background:#00c6ff;font-weight:bold;cursor:pointer;margin-bottom:10px;}
+.result{margin-top:15px;background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;min-height:40px;font-size:16px;word-wrap:break-word;}
 </style>
 </head>
 <body>
@@ -87,15 +33,15 @@ button.calc{
 
 <!-- Aba Básica -->
 <div id="basica" class="section active">
-    <input type="text" id="basicInput" placeholder="Ex: 5^2 + 3*4">
+    <input type="text" id="basicInput" placeholder="Ex: 5^2 + 11*3">
     <button class="calc" onclick="calcBasic()">Calcular</button>
     <div class="result" id="basicResult"></div>
 </div>
 
 <!-- Aba Álgebra -->
 <div id="algebra" class="section">
-    <input type="text" id="algebraInput" placeholder="Ex: x^2 - 4">
-    <input type="text" id="userAnswer" placeholder="Sua resposta">
+    <input type="text" id="algebraInput" placeholder="Equação Ex: x^2 - 4">
+    <input type="text" id="userAnswer" placeholder="Sua resposta (opcional)">
     <button class="calc" onclick="solveEquation()">Resolver</button>
     <button class="calc" onclick="corrigir()">Corrigir Resposta</button>
     <div class="result" id="algebraResult"></div>
@@ -106,8 +52,10 @@ button.calc{
     <select id="calcMode">
         <option value="derivar">Derivar</option>
         <option value="integrar">Integrar</option>
+        <option value="limite">Limite</option>
     </select>
-    <input type="text" id="calcInput" placeholder="Ex: x^3 + 2*x">
+    <input type="text" id="calcInput" placeholder="Ex: x^3 + 11*x">
+    <input type="text" id="limitePoint" placeholder="Valor para limite (ex: x→2)" style="display:none;">
     <button class="calc" onclick="calcCalculus()">Calcular</button>
     <div class="result" id="calcResult"></div>
 </div>
@@ -126,6 +74,13 @@ function showTab(id, btn){
     document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
+
+    // Mostrar/ocultar input do limite
+    if(id==="calculo"){
+        document.getElementById("calcMode").addEventListener("change", function(){
+            document.getElementById("limitePoint").style.display = this.value==="limite"?"block":"none";
+        });
+    }
 }
 
 // ---------- Básica ----------
@@ -134,7 +89,7 @@ function calcBasic(){
         let v = document.getElementById("basicInput").value;
         let result = math.evaluate(v);
         document.getElementById("basicResult").innerText = result;
-    }catch(e){
+    }catch{
         document.getElementById("basicResult").innerText = "Erro na expressão";
     }
 }
@@ -145,7 +100,7 @@ function solveEquation(){
         let eq = document.getElementById("algebraInput").value;
         let res = Algebrite.run("roots(" + eq + ")");
         document.getElementById("algebraResult").innerText = res;
-    }catch(e){
+    }catch{
         document.getElementById("algebraResult").innerText = "Erro: use formato correto, ex: x^2 - 4";
     }
 }
@@ -155,10 +110,10 @@ function corrigir(){
         let respostaUsuario = document.getElementById("userAnswer").value;
         let eq = document.getElementById("algebraInput").value;
         let resultadoCorreto = Algebrite.run("roots(" + eq + ")");
-        if(resultadoCorreto.includes(respostaUsuario)){
+        if(respostaUsuario && resultadoCorreto.includes(respostaUsuario)){
             alert("✅ Correto!");
         } else {
-            alert("❌ Errado! Resposta correta: " + resultadoCorreto);
+            alert("❌ Resposta correta: " + resultadoCorreto);
         }
     }catch{
         alert("Erro ao corrigir resposta");
@@ -171,8 +126,17 @@ function calcCalculus(){
         let expr = document.getElementById("calcInput").value;
         let mode = document.getElementById("calcMode").value;
         let output = document.getElementById("calcResult");
-        if(mode==="derivar") output.innerText = Algebrite.run("d("+expr+", x)");
-        else output.innerText = Algebrite.run("integral("+expr+", x)");
+
+        if(mode==="derivar"){
+            output.innerText = Algebrite.run("d("+expr+", x)");
+        } else if(mode==="integrar"){
+            output.innerText = Algebrite.run("integral("+expr+", x)");
+        } else if(mode==="limite"){
+            let ponto = document.getElementById("limitePoint").value;
+            if(!ponto) { output.innerText="Informe o ponto para o limite"; return; }
+            let limiteExpr = "limit("+expr+", x,"+ponto+")";
+            output.innerText = Algebrite.run(limiteExpr);
+        }
     }catch{
         document.getElementById("calcResult").innerText = "Erro no cálculo";
     }
@@ -189,4 +153,4 @@ function volumeCubo(){
 }
 </script>
 </body>
-</html>
+        </html>
