@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MatemáticaBC.com - Calculadora Avançada</title>
+<title>MatemáticaBC.com - Calculadora Avançada por Tópicos</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
 
@@ -18,6 +18,9 @@ header{text-align:center;padding:15px;font-size:22px;font-weight:bold;}
 input, select{width:100%;padding:12px;border-radius:10px;border:none;margin-bottom:10px;font-size:16px;}
 button.calc{width:100%;padding:12px;border:none;border-radius:10px;background:#00c6ff;font-weight:bold;cursor:pointer;margin-bottom:10px;}
 .result{margin-top:15px;background:rgba(255,255,255,0.1);padding:15px;border-radius:15px;min-height:40px;font-size:16px;word-wrap:break-word;}
+.example-button{width:100%;margin-bottom:5px;padding:10px;border-radius:8px;border:none;background:#203a43;color:white;cursor:pointer;text-align:left;}
+.example-button:hover{background:#00c6ff;color:black;}
+h3{margin-top:20px;}
 </style>
 </head>
 <body>
@@ -25,42 +28,40 @@ button.calc{width:100%;padding:12px;border:none;border-radius:10px;background:#0
 <header>📐 MatemáticaBC.com - Calculadora Avançada</header>
 
 <div class="nav">
-    <button onclick="showTab('basica', this)" class="active">Básica</button>
-    <button onclick="showTab('algebra', this)">Álgebra</button>
+    <button onclick="showTab('equacoes', this)" class="active">Equações</button>
     <button onclick="showTab('calculo', this)">Cálculo</button>
     <button onclick="showTab('geometria', this)">Geometria</button>
 </div>
 
-<!-- Aba Básica -->
-<div id="basica" class="section active">
-    <input type="text" id="basicInput" placeholder="Ex: 5^2 + 11*3">
-    <button class="calc" onclick="calcBasic()">Calcular</button>
-    <div class="result" id="basicResult"></div>
+<!-- ===== Aba Equações ===== -->
+<div id="equacoes" class="section active">
+    <h3>Escolha o tipo de equação:</h3>
+    <button onclick="showSubcategory('polinomial')" class="example-button">Polinomial</button>
+    <button onclick="showSubcategory('logaritmica')" class="example-button">Logarítmica</button>
+    <button onclick="showSubcategory('exponencial')" class="example-button">Exponencial</button>
+    <button onclick="showSubcategory('trigonometrica')" class="example-button">Trigonométrica</button>
+
+    <div id="examplesContainer"></div>
 </div>
 
-<!-- Aba Álgebra -->
-<div id="algebra" class="section">
-    <input type="text" id="algebraInput" placeholder="Equação Ex: x^2 - 4">
-    <input type="text" id="userAnswer" placeholder="Sua resposta (opcional)">
-    <button class="calc" onclick="solveEquation()">Resolver</button>
-    <button class="calc" onclick="corrigir()">Corrigir Resposta</button>
-    <div class="result" id="algebraResult"></div>
-</div>
-
-<!-- Aba Cálculo -->
+<!-- ===== Aba Cálculo ===== -->
 <div id="calculo" class="section">
     <select id="calcMode">
         <option value="derivar">Derivar</option>
         <option value="integrar">Integrar</option>
         <option value="limite">Limite</option>
     </select>
-    <input type="text" id="calcInput" placeholder="Ex: x^3 + 11*x">
-    <input type="text" id="limitePoint" placeholder="Valor para limite (ex: x→2)" style="display:none;">
+    <select id="calcExample">
+        <option value="x^3 + 11*x">x^3 + 11*x</option>
+        <option value="x^2 + 5*x + 1">x^2 + 5*x + 1</option>
+        <option value="sin(x)/x">sin(x)/x</option>
+    </select>
+    <input type="text" id="limitePoint" placeholder="Valor para limite (ex: 2)" style="display:none;">
     <button class="calc" onclick="calcCalculus()">Calcular</button>
     <div class="result" id="calcResult"></div>
 </div>
 
-<!-- Aba Geometria -->
+<!-- ===== Aba Geometria ===== -->
 <div id="geometria" class="section">
     <input type="number" id="lado" placeholder="Lado do Cubo">
     <button class="calc" onclick="volumeCubo()">Calcular Volume</button>
@@ -68,14 +69,13 @@ button.calc{width:100%;padding:12px;border:none;border-radius:10px;background:#0
 </div>
 
 <script>
-// Navegação por abas
+// ---------- Navegação por abas ----------
 function showTab(id, btn){
     document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
     document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
     document.getElementById(id).classList.add('active');
     btn.classList.add('active');
 
-    // Mostrar/ocultar input do limite
     if(id==="calculo"){
         document.getElementById("calcMode").addEventListener("change", function(){
             document.getElementById("limitePoint").style.display = this.value==="limite"?"block":"none";
@@ -83,47 +83,42 @@ function showTab(id, btn){
     }
 }
 
-// ---------- Básica ----------
-function calcBasic(){
-    try{
-        let v = document.getElementById("basicInput").value;
-        let result = math.evaluate(v);
-        document.getElementById("basicResult").innerText = result;
-    }catch{
-        document.getElementById("basicResult").innerText = "Erro na expressão";
-    }
+// ---------- Equações com exemplos ----------
+const examples = {
+    polinomial: ["x^2 - 4 = 0", "x^3 - 3*x + 2 = 0"],
+    logaritmica: ["log(x) - 2 = 0", "ln(x+1) - 3 = 0"],
+    exponencial: ["2^x - 8 = 0", "e^x - 5 = 0"],
+    trigonometrica: ["sin(x) - 1/2 = 0", "cos(x) - 0 = 0"]
+};
+
+function showSubcategory(category){
+    const container = document.getElementById("examplesContainer");
+    container.innerHTML = `<h3>Exemplos (${category})</h3>`;
+    examples[category].forEach(ex => {
+        const btn = document.createElement("button");
+        btn.className="example-button";
+        btn.innerText=ex;
+        btn.onclick=()=>solveExample(ex);
+        container.appendChild(btn);
+    });
 }
 
-// ---------- Álgebra ----------
-function solveEquation(){
+function solveExample(expr){
     try{
-        let eq = document.getElementById("algebraInput").value;
-        let res = Algebrite.run("roots(" + eq + ")");
-        document.getElementById("algebraResult").innerText = res;
+        let eq = expr.replace("=", "-(")+")"; // converte a equação para Algebrite
+        let res = Algebrite.run("roots("+eq+")");
+        const container = document.getElementById("examplesContainer");
+        container.innerHTML += `<div class="result">Resultado: ${res}</div>`;
     }catch{
-        document.getElementById("algebraResult").innerText = "Erro: use formato correto, ex: x^2 - 4";
-    }
-}
-
-function corrigir(){
-    try{
-        let respostaUsuario = document.getElementById("userAnswer").value;
-        let eq = document.getElementById("algebraInput").value;
-        let resultadoCorreto = Algebrite.run("roots(" + eq + ")");
-        if(respostaUsuario && resultadoCorreto.includes(respostaUsuario)){
-            alert("✅ Correto!");
-        } else {
-            alert("❌ Resposta correta: " + resultadoCorreto);
-        }
-    }catch{
-        alert("Erro ao corrigir resposta");
+        const container = document.getElementById("examplesContainer");
+        container.innerHTML += `<div class="result">Erro ao calcular</div>`;
     }
 }
 
 // ---------- Cálculo ----------
 function calcCalculus(){
     try{
-        let expr = document.getElementById("calcInput").value;
+        let expr = document.getElementById("calcExample").value;
         let mode = document.getElementById("calcMode").value;
         let output = document.getElementById("calcResult");
 
@@ -133,7 +128,7 @@ function calcCalculus(){
             output.innerText = Algebrite.run("integral("+expr+", x)");
         } else if(mode==="limite"){
             let ponto = document.getElementById("limitePoint").value;
-            if(!ponto) { output.innerText="Informe o ponto para o limite"; return; }
+            if(!ponto){ output.innerText="Informe o ponto para o limite"; return; }
             let limiteExpr = "limit("+expr+", x,"+ponto+")";
             output.innerText = Algebrite.run(limiteExpr);
         }
@@ -153,4 +148,4 @@ function volumeCubo(){
 }
 </script>
 </body>
-        </html>
+</html>
