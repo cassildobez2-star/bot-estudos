@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora Matemática Interativa</title>
+<title>Calculadora Matemática Interativa com IA</title>
 
 <!-- Bibliotecas -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
@@ -38,6 +38,7 @@ header{
     color:white;
     font-weight:bold;
     cursor:pointer;
+    transition:0.2s;
 }
 
 .nav button.active{
@@ -60,6 +61,7 @@ input{
     border-radius:10px;
     border:none;
     margin-bottom:10px;
+    font-size:16px;
 }
 
 button.calc{
@@ -70,6 +72,7 @@ button.calc{
     background:#00c6ff;
     font-weight:bold;
     cursor:pointer;
+    margin-bottom:10px;
 }
 
 .result{
@@ -77,13 +80,15 @@ button.calc{
     background:rgba(255,255,255,0.1);
     padding:15px;
     border-radius:15px;
+    min-height:40px;
+    font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<header>📐 Calculadora Matemática Interativa</header>
+<header>📐 Calculadora Matemática Interativa com IA</header>
 
 <div class="nav">
     <button onclick="showTab('basica', this)" class="active">Básica</button>
@@ -105,6 +110,7 @@ button.calc{
     <input type="text" id="userAnswer" placeholder="Sua resposta">
     <button class="calc" onclick="solveEquation()">Resolver</button>
     <button class="calc" onclick="corrigir()">Corrigir Resposta</button>
+    <button class="calc" onclick="solucaoIA('algebra')">💡 Solução IA</button>
     <div class="result" id="algebraResult"></div>
 </div>
 
@@ -116,6 +122,7 @@ button.calc{
     </select>
     <input type="text" id="calcInput" placeholder="Ex: x^3">
     <button class="calc" onclick="calcCalculus()">Calcular</button>
+    <button class="calc" onclick="solucaoIA('calculo')">💡 Solução IA</button>
     <div class="result" id="calcResult"></div>
 </div>
 
@@ -189,7 +196,58 @@ function volumeCubo(){
     document.getElementById("geoResult").innerText =
         "Volume = " + (lado**3);
 }
+
+// Função IA
+async function solucaoIA(modalidade){
+    let prompt;
+    let expr;
+
+    if(modalidade === "algebra"){
+        expr = document.getElementById("algebraInput").value;
+        prompt = "Resolva este problema de álgebra passo a passo: " + expr;
+        document.getElementById("algebraResult").innerText = "Calculando com IA...";
+    } else if(modalidade === "calculo"){
+        expr = document.getElementById("calcInput").value;
+        prompt = "Resolva este problema de cálculo passo a passo: " + expr;
+        document.getElementById("calcResult").innerText = "Calculando com IA...";
+    }
+
+    try{
+        const response = await fetch("https://api.openai.com/v1/chat/completions",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"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"
+            },
+            body: JSON.stringify({
+                model:"gpt-4",
+                messages:[
+                    {role:"system", content:"Você é um professor de matemática avançada, explique passo a passo."},
+                    {role:"user", content:prompt}
+                ],
+                max_tokens:500
+            })
+        });
+
+        const data = await response.json();
+        const answer = data.choices[0].message.content;
+
+        if(modalidade === "algebra"){
+            document.getElementById("algebraResult").innerText = answer;
+        } else {
+            document.getElementById("calcResult").innerText = answer;
+        }
+
+    } catch(err){
+        if(modalidade === "algebra"){
+            document.getElementById("algebraResult").innerText = "Erro ao consultar IA";
+        } else {
+            document.getElementById("calcResult").innerText = "Erro ao consultar IA";
+        }
+        console.error(err);
+    }
+}
 </script>
 
 </body>
-</html>
+        </html>
