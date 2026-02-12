@@ -1,4 +1,5 @@
 flask
-sympy
 flask-cors
+sympy
+openai
 gunicorn
