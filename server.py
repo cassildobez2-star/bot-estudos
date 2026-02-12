@@ -1,9 +1,12 @@
 from flask import Flask, request, jsonify
-from sympy import *
+from flask_cors import CORS
+from sympy import symbols, diff, integrate, limit, solve, sympify
 from sympy.parsing.sympy_parser import parse_expr
-from sympy.abc import x, y, z
 
 app = Flask(__name__)
+CORS(app)  # ⚡ Ativa CORS para aceitar requisições do frontend
+
+x, y, z = symbols('x y z')  # símbolos padrão
 
 @app.route("/")
 def home():
@@ -14,25 +17,24 @@ def calcular():
     data = request.json
     modo = data.get("modo")
     expressao = data.get("expressao")
-    valor = data.get("valor")
+    valor = data.get("valor")  # usado para limite
 
     try:
-        expr = parse_expr(expressao)
+        # Converte string para expressão SymPy
+        expr = parse_expr(expressao.replace("^","**"))
 
         if modo == "equacao":
             resultado = solve(expr, x)
-
-        elif modo == "derivar":
+        elif modo == "derivada":
             resultado = diff(expr, x)
-
-        elif modo == "integrar":
+        elif modo == "integral":
             resultado = integrate(expr, x)
-
         elif modo == "limite":
+            if valor is None or valor == "":
+                return jsonify({"erro":"Informe o valor do limite"})
             resultado = limit(expr, x, float(valor))
-
         else:
-            return jsonify({"erro": "Modo inválido"})
+            return jsonify({"erro":"Modo inválido"})
 
         return jsonify({"resultado": str(resultado)})
 
