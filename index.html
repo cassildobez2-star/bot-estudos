@@ -100,12 +100,28 @@ function setExemplo(valor){
     document.getElementById("entrada").value = valor;
 }
 
+function limparExpressao(expr){
+
+    expr = expr.replace(/√/g, "sqrt");
+    expr = expr.replace(/sen/g, "sin");
+    expr = expr.replace(/ln/g, "log");
+    expr = expr.replace(/,/g, ".");
+    
+    // transforma 2x em 2*x
+    expr = expr.replace(/(\d)([a-zA-Z])/g, "$1*$2");
+
+    return expr;
+}
+
 function calcular(){
+
     const modo = modoSelect.value;
     let expr = document.getElementById("entrada").value;
     const resultado = document.getElementById("resultado");
 
     try{
+
+        expr = limparExpressao(expr);
 
         if(modo === "equacao"){
 
@@ -117,6 +133,9 @@ function calcular(){
             let partes = expr.split("=");
             let esquerda = partes[0];
             let direita = partes[1];
+
+            esquerda = limparExpressao(esquerda);
+            direita = limparExpressao(direita);
 
             let equacao = esquerda + "-(" + direita + ")";
             resultado.innerText = Algebrite.run("roots(" + equacao + ")");
@@ -132,18 +151,21 @@ function calcular(){
         }
 
         else if(modo === "limite"){
-            let ponto = limiteInput.value;
+            let ponto = document.getElementById("valorLimite").value;
 
             if(!ponto){
                 resultado.innerText = "Digite o valor do limite.";
                 return;
             }
 
+            ponto = limparExpressao(ponto);
+
             resultado.innerText = Algebrite.run("limit(" + expr + ", x, " + ponto + ")");
         }
 
     }catch(e){
-        resultado.innerText = "Erro na expressão. Verifique a sintaxe.";
+        console.log(e);
+        resultado.innerText = "Erro real na expressão matemática.";
     }
 }
 
