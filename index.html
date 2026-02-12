@@ -5,35 +5,53 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calculadora Matemática Pro</title>
 
-<!-- Math.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
 
 <style>
-body {
+body{
     margin:0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
     color:white;
-    padding:20px;
 }
 
-.menu {
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px;
-    margin-bottom:20px;
+header{
+    text-align:center;
+    padding:15px;
+    font-size:22px;
+    font-weight:bold;
 }
 
-button {
+.nav{
+    display:flex;
+    justify-content:space-around;
+    background:#1f4068;
+}
+
+.nav button{
+    flex:1;
     padding:12px;
     border:none;
-    border-radius:10px;
-    background:#1f4068;
+    background:none;
     color:white;
     font-weight:bold;
 }
 
-input {
+.nav button.active{
+    background:#00c6ff;
+    color:black;
+}
+
+.section{
+    display:none;
+    padding:20px;
+}
+
+.section.active{
+    display:block;
+}
+
+input{
     width:100%;
     padding:12px;
     border-radius:10px;
@@ -41,8 +59,17 @@ input {
     margin-bottom:10px;
 }
 
-.result {
-    margin-top:20px;
+button.calc{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:#00c6ff;
+    font-weight:bold;
+}
+
+.result{
+    margin-top:15px;
     background:rgba(255,255,255,0.1);
     padding:15px;
     border-radius:15px;
@@ -52,30 +79,88 @@ input {
 
 <body>
 
-<h1>📐 Calculadora Matemática Pro</h1>
+<header>📐 Calculadora Matemática Pro</header>
 
-<input type="text" id="expression" placeholder="Digite 3+2 ou 5^2">
+<div class="nav">
+    <button onclick="showTab('basica', this)" class="active">Básica</button>
+    <button onclick="showTab('algebra', this)">Álgebra</button>
+    <button onclick="showTab('calculo', this)">Cálculo</button>
+    <button onclick="showTab('geometria', this)">Geometria</button>
+</div>
 
-<button onclick="calculate()">Calcular</button>
+<!-- Básica -->
+<div id="basica" class="section active">
+    <input type="text" id="basicInput" placeholder="Ex: 5^2 + 3">
+    <button class="calc" onclick="calcBasic()">Calcular</button>
+    <div class="result" id="basicResult"></div>
+</div>
 
-<div class="result">
-    <h2>Resultado:</h2>
-    <div id="output"></div>
+<!-- Álgebra -->
+<div id="algebra" class="section">
+    <input type="text" id="algebraInput" placeholder="Ex: x^2 - 4">
+    <button class="calc" onclick="solveEquation()">Resolver</button>
+    <div class="result" id="algebraResult"></div>
+</div>
+
+<!-- Cálculo -->
+<div id="calculo" class="section">
+    <input type="text" id="calcInput" placeholder="Ex: x^3">
+    <button class="calc" onclick="derivar()">Derivar</button>
+    <div class="result" id="calcResult"></div>
+</div>
+
+<!-- Geometria -->
+<div id="geometria" class="section">
+    <input type="number" id="lado" placeholder="Lado do Cubo">
+    <button class="calc" onclick="volumeCubo()">Calcular Volume</button>
+    <div class="result" id="geoResult"></div>
 </div>
 
 <script>
-function calculate() {
-    const expr = document.getElementById("expression").value;
-    const output = document.getElementById("output");
 
-    try {
-        const result = math.evaluate(expr);
-        output.innerText = result;
-    } catch (err) {
-        output.innerText = "Erro na expressão";
+function showTab(id, btn){
+    document.querySelectorAll('.section').forEach(sec=>sec.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b=>b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    btn.classList.add('active');
+}
+
+function calcBasic(){
+    try{
+        let v = document.getElementById("basicInput").value;
+        document.getElementById("basicResult").innerText = math.evaluate(v);
+    }catch{
+        document.getElementById("basicResult").innerText = "Erro";
     }
 }
+
+function solveEquation(){
+    try{
+        let eq = document.getElementById("algebraInput").value;
+        let res = math.solve(eq, 'x');
+        document.getElementById("algebraResult").innerText = res;
+    }catch{
+        document.getElementById("algebraResult").innerText = "Use formato: x^2 - 4";
+    }
+}
+
+function derivar(){
+    try{
+        let expr = document.getElementById("calcInput").value;
+        document.getElementById("calcResult").innerText =
+            math.derivative(expr, 'x').toString();
+    }catch{
+        document.getElementById("calcResult").innerText = "Erro";
+    }
+}
+
+function volumeCubo(){
+    let lado = document.getElementById("lado").value;
+    document.getElementById("geoResult").innerText =
+        "Volume = " + (lado**3);
+}
+
 </script>
 
 </body>
-</html>
+        </html>
