@@ -99,6 +99,57 @@ h3 { margin-top:20px; }
 #themeToggle:hover{
     background:#ffc107;
 }
+
+/* ===== Botão IA ===== */
+#iaBtn{
+    position:fixed;
+    bottom:20px;
+    right:20px;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:#ff6f61;
+    border:none;
+    color:white;
+    font-size:20px;
+    cursor:pointer;
+    box-shadow:0 5px 15px rgba(0,0,0,0.3);
+}
+
+/* Modal Chat IA */
+#chatModal{
+    display:none;
+    position:fixed;
+    bottom:90px;
+    right:20px;
+    width:300px;
+    max-height:400px;
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(15px);
+    border-radius:20px;
+    padding:15px;
+    overflow-y:auto;
+    color:white;
+}
+#chatHistorico{
+    max-height:280px;
+    overflow-y:auto;
+}
+#chatInput{
+    width:100%;
+    padding:8px;
+    border-radius:10px;
+    border:none;
+}
+#chatModal button{
+    width:100%;
+    margin-top:5px;
+    padding:8px;
+    border-radius:10px;
+    border:none;
+    background:#00c6ff;
+    color:white;
+}
 </style>
 </head>
 <body>
@@ -142,6 +193,16 @@ h3 { margin-top:20px; }
 <div id="historico"></div>
 </div>
 
+<!-- ===== Botão IA ===== -->
+<button id="iaBtn" onclick="abrirChat()">IA</button>
+
+<!-- ===== Modal Chat IA ===== -->
+<div id="chatModal">
+    <div id="chatHistorico"></div>
+    <input type="text" id="chatInput" placeholder="Digite sua pergunta...">
+    <button onclick="enviarChat()">Enviar</button>
+</div>
+
 <script>
 const modoSelect = document.getElementById("modo");
 const limiteInput = document.getElementById("valorLimite");
@@ -170,7 +231,7 @@ function toggleTema(){
     document.body.classList.toggle("light");
 }
 
-// Função principal de cálculo
+// ===== Calculadora =====
 async function calcular(){
     const modo = modoSelect.value;
     let expressao = document.getElementById("entrada").value;
@@ -185,18 +246,11 @@ async function calcular(){
     try{
         const resposta = await fetch("https://bot-estudos-production.up.railway.app/calcular", {
             method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify({
-                modo:modo,
-                expressao:expressao,
-                valor:valor
-            })
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({modo, expressao, valor})
         });
 
         const dados = await resposta.json();
-
         if(dados.resultado){
             resultadoDiv.innerText = dados.resultado;
             adicionarHistorico(modo, expressao, dados.resultado);
@@ -209,14 +263,42 @@ async function calcular(){
     }
 }
 
-// Adicionar histórico de cálculos
+// Histórico
 function adicionarHistorico(modo, expressao, resultado){
     const entry = document.createElement("div");
     const agora = new Date();
     entry.innerText = `[${modo}] ${expressao} = ${resultado} (${agora.getHours()}:${agora.getMinutes()}:${agora.getSeconds()})`;
-    historico.prepend(entry); // adiciona no topo
+    historico.prepend(entry);
+}
+
+// ===== Chat IA =====
+function abrirChat(){
+    const modal = document.getElementById("chatModal");
+    modal.style.display = (modal.style.display === "block") ? "none" : "block";
+}
+
+async function enviarChat(){
+    const input = document.getElementById("chatInput");
+    const chatHist = document.getElementById("chatHistorico");
+    const pergunta = input.value;
+    if(!pergunta) return;
+    chatHist.innerHTML += `<div>🧑: ${pergunta}</div>`;
+    input.value = "";
+
+    try{
+        const resposta = await fetch("https://bot-estudos-production.up.railway.app/ia", {
+            method:"POST",
+            headers:{"Content-Type":"application/json"},
+            body:JSON.stringify({ pergunta })
+        });
+        const dados = await resposta.json();
+        chatHist.innerHTML += `<div>🤖: ${dados.resposta}</div>`;
+        chatHist.scrollTop = chatHist.scrollHeight;
+    } catch(err){
+        chatHist.innerHTML += `<div>🤖: Erro ao conectar IA.</div>`;
+    }
 }
 </script>
 
 </body>
-</html>
+    </html>
