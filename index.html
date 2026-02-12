@@ -1,5 +1,28 @@
-async function calcular(){
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>MatematicaCass</title>
+</head>
+<body>
 
+<h1>Calculadora Matemática</h1>
+
+<select id="modo">
+    <option value="derivada">Derivada</option>
+    <option value="integral">Integral</option>
+    <option value="limite">Limite</option>
+</select>
+
+<input type="text" id="entrada" placeholder="Digite a expressão">
+<input type="text" id="valorLimite" placeholder="Valor (se for limite)">
+<button onclick="calcular()">Calcular</button>
+
+<p id="resultado"></p>
+
+<!-- 👇 O SCRIPT TEM QUE ESTAR AQUI DENTRO -->
+<script>
+async function calcular(){
     const modo = document.getElementById("modo").value;
     const expressao = document.getElementById("entrada").value;
     const valor = document.getElementById("valorLimite").value;
@@ -24,3 +47,7 @@ async function calcular(){
         document.getElementById("resultado").innerText = dados.erro;
     }
 }
+</script>
+
+</body>
+</html>
