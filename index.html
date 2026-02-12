@@ -6,8 +6,8 @@
 <title>MatematicaBC.com</title>
 
 <style>
-/* 🌈 Visual moderno - glassmorphism */
-body {
+/* ===== Estilo moderno ===== */
+body{
     margin:0;
     font-family: Arial, sans-serif;
     background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
@@ -17,6 +17,12 @@ body {
     min-height:100vh;
     padding-top:50px;
     color:white;
+    transition:0.3s;
+}
+
+body.light{
+    background: linear-gradient(135deg,#ffffff,#e0e0e0);
+    color:#000;
 }
 
 .container {
@@ -24,13 +30,10 @@ body {
     backdrop-filter: blur(20px);
     padding: 25px;
     border-radius: 20px;
-    width: 350px;
+    width: 360px;
 }
 
-h1 {
-    text-align:center;
-    margin-bottom:20px;
-}
+h1{text-align:center;margin-bottom:20px;}
 
 select, input, button {
     width:100%;
@@ -74,12 +77,36 @@ h3 { margin-top:20px; }
     overflow-y:auto;
     font-size:14px;
 }
+
+/* Botões de funções matemáticas */
+.func-btn{
+    background:#ff6f61;
+    margin:4px 2px;
+    font-size:14px;
+}
+.func-btn:hover{
+    background:#e6554f;
+}
+
+/* Toggle tema */
+#themeToggle{
+    width:auto;
+    padding:8px 15px;
+    margin-bottom:10px;
+    background:#ffd700;
+    color:#000;
+}
+#themeToggle:hover{
+    background:#ffc107;
+}
 </style>
 </head>
 <body>
 
 <div class="container">
 <h1>MatematicaBC.com</h1>
+
+<button id="themeToggle" onclick="toggleTema()">🌗 Tema</button>
 
 <select id="modo">
     <option value="equacao">Equação</option>
@@ -89,12 +116,21 @@ h3 { margin-top:20px; }
 </select>
 
 <input type="text" id="entrada" placeholder="Digite a expressão (ex: x^2 - 4)">
-
 <input type="text" id="valorLimite" placeholder="Valor do limite (se necessário)" style="display:none;">
-
 <button onclick="calcular()">Calcular</button>
 
 <div id="resultado"></div>
+
+<h3>Funções Rápidas:</h3>
+<div>
+<button class="func-btn" onclick="addFunc('sin(x)')">sin(x)</button>
+<button class="func-btn" onclick="addFunc('cos(x)')">cos(x)</button>
+<button class="func-btn" onclick="addFunc('tan(x)')">tan(x)</button>
+<button class="func-btn" onclick="addFunc('log(x)')">log(x)</button>
+<button class="func-btn" onclick="addFunc('ln(x)')">ln(x)</button>
+<button class="func-btn" onclick="addFunc('e^x')">e^x</button>
+<button class="func-btn" onclick="addFunc('sqrt(x)')">√x</button>
+</div>
 
 <h3>Exemplos:</h3>
 <button onclick="setExemplo('x^2 - 4')">Equação: x² - 4</button>
@@ -116,9 +152,22 @@ modoSelect.addEventListener("change", function(){
     limiteInput.style.display = (this.value === "limite") ? "block" : "none";
 });
 
+// Adicionar funções clicáveis no input
+function addFunc(func){
+    const entrada = document.getElementById("entrada");
+    if(entrada.value && !entrada.value.endsWith(' ')) entrada.value += "*";
+    entrada.value += func;
+    entrada.focus();
+}
+
 // Carregar exemplos no input
 function setExemplo(valor){
     document.getElementById("entrada").value = valor;
+}
+
+// Toggle tema claro/escuro
+function toggleTema(){
+    document.body.classList.toggle("light");
 }
 
 // Função principal de cálculo
@@ -140,9 +189,9 @@ async function calcular(){
                 "Content-Type":"application/json"
             },
             body:JSON.stringify({
-                modo: modo,
-                expressao: expressao,
-                valor: valor
+                modo:modo,
+                expressao:expressao,
+                valor:valor
             })
         });
 
@@ -163,10 +212,11 @@ async function calcular(){
 // Adicionar histórico de cálculos
 function adicionarHistorico(modo, expressao, resultado){
     const entry = document.createElement("div");
-    entry.innerText = `[${modo}] ${expressao} = ${resultado}`;
+    const agora = new Date();
+    entry.innerText = `[${modo}] ${expressao} = ${resultado} (${agora.getHours()}:${agora.getMinutes()}:${agora.getSeconds()})`;
     historico.prepend(entry); // adiciona no topo
 }
 </script>
 
 </body>
-    </html>
+</html>
