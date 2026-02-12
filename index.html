@@ -1,53 +1,172 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt">
 <head>
-    <meta charset="UTF-8">
-    <title>MatematicaCass</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MatematicaBC.com</title>
+
+<style>
+/* 🌈 Visual moderno - glassmorphism */
+body {
+    margin:0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+    min-height:100vh;
+    padding-top:50px;
+    color:white;
+}
+
+.container {
+    background: rgba(255,255,255,0.05);
+    backdrop-filter: blur(20px);
+    padding: 25px;
+    border-radius: 20px;
+    width: 350px;
+}
+
+h1 {
+    text-align:center;
+    margin-bottom:20px;
+}
+
+select, input, button {
+    width:100%;
+    padding:10px;
+    margin:8px 0;
+    border-radius:10px;
+    border:none;
+    font-size:16px;
+}
+
+button {
+    background:#00c6ff;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover {
+    background:#0072ff;
+}
+
+#resultado {
+    margin-top:15px;
+    min-height:40px;
+    background: rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:10px;
+    word-wrap: break-word;
+}
+
+h3 { margin-top:20px; }
+
+/* Histórico de cálculos */
+#historico {
+    margin-top:15px;
+    background: rgba(255,255,255,0.1);
+    border-radius:10px;
+    padding:10px;
+    max-height:120px;
+    overflow-y:auto;
+    font-size:14px;
+}
+</style>
 </head>
 <body>
 
-<h1>Calculadora Matemática</h1>
+<div class="container">
+<h1>MatematicaBC.com</h1>
 
 <select id="modo">
+    <option value="equacao">Equação</option>
     <option value="derivada">Derivada</option>
     <option value="integral">Integral</option>
     <option value="limite">Limite</option>
 </select>
 
-<input type="text" id="entrada" placeholder="Digite a expressão">
-<input type="text" id="valorLimite" placeholder="Valor (se for limite)">
+<input type="text" id="entrada" placeholder="Digite a expressão (ex: x^2 - 4)">
+
+<input type="text" id="valorLimite" placeholder="Valor do limite (se necessário)" style="display:none;">
+
 <button onclick="calcular()">Calcular</button>
 
-<p id="resultado"></p>
+<div id="resultado"></div>
 
-<!-- 👇 O SCRIPT TEM QUE ESTAR AQUI DENTRO -->
+<h3>Exemplos:</h3>
+<button onclick="setExemplo('x^2 - 4')">Equação: x² - 4</button>
+<button onclick="setExemplo('x^3 + 11*x')">Derivada: x³ + 11x</button>
+<button onclick="setExemplo('sin(x)')">Integral: sin(x)</button>
+<button onclick="setExemplo('sin(x)/x')">Limite: sin(x)/x</button>
+
+<h3>Histórico:</h3>
+<div id="historico"></div>
+</div>
+
 <script>
+const modoSelect = document.getElementById("modo");
+const limiteInput = document.getElementById("valorLimite");
+const historico = document.getElementById("historico");
+
+// Mostrar/ocultar input do limite
+modoSelect.addEventListener("change", function(){
+    limiteInput.style.display = (this.value === "limite") ? "block" : "none";
+});
+
+// Carregar exemplos no input
+function setExemplo(valor){
+    document.getElementById("entrada").value = valor;
+}
+
+// Função principal de cálculo
 async function calcular(){
-    const modo = document.getElementById("modo").value;
-    const expressao = document.getElementById("entrada").value;
-    const valor = document.getElementById("valorLimite").value;
+    const modo = modoSelect.value;
+    let expressao = document.getElementById("entrada").value;
+    let valor = document.getElementById("valorLimite").value;
+    const resultadoDiv = document.getElementById("resultado");
 
-    const resposta = await fetch("https://bot-estudos-production.up.railway.app/calcular", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            modo: modo,
-            expressao: expressao,
-            valor: valor
-        })
-    });
-
-    const dados = await resposta.json();
-
-    if(dados.resultado){
-        document.getElementById("resultado").innerText = dados.resultado;
-    } else {
-        document.getElementById("resultado").innerText = dados.erro;
+    if(expressao.trim() === ""){
+        resultadoDiv.innerText = "Digite uma expressão válida.";
+        return;
     }
+
+    try{
+        const resposta = await fetch("https://bot-estudos-production.up.railway.app/calcular", {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify({
+                modo: modo,
+                expressao: expressao,
+                valor: valor
+            })
+        });
+
+        const dados = await resposta.json();
+
+        if(dados.resultado){
+            resultadoDiv.innerText = dados.resultado;
+            adicionarHistorico(modo, expressao, dados.resultado);
+        } else{
+            resultadoDiv.innerText = "Erro: " + dados.erro;
+        }
+
+    } catch(err){
+        resultadoDiv.innerText = "Erro ao conectar com o servidor.";
+    }
+}
+
+// Adicionar histórico de cálculos
+function adicionarHistorico(modo, expressao, resultado){
+    const entry = document.createElement("div");
+    entry.innerText = `[${modo}] ${expressao} = ${resultado}`;
+    historico.prepend(entry); // adiciona no topo
 }
 </script>
 
 </body>
-</html>
+    </html>
