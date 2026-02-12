@@ -1,6 +1,16 @@
-function calculate() {
-    const expr = document.getElementById("expression").value;
-    const output = document.getElementById("output");
+window.onload = function() {
 
-    output.innerText = "Você digitou: " + expr;
+    window.calculate = function() {
+
+        const expr = document.getElementById("expression").value;
+        const output = document.getElementById("output");
+
+        try {
+            const result = math.evaluate(expr);
+            output.innerText = result;
+        } catch (err) {
+            output.innerText = "Erro na expressão";
+        }
+    }
+
 }
