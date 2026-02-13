@@ -1,30 +1,48 @@
-HF_TOKEN = os.environ.get("HF_TOKEN")
-HF_MODEL = "mistralai/Mistral-7B-Instruct-v0.2"
+from sympy import symbols, diff, integrate, limit, solve, factorial
+from sympy.parsing.sympy_parser import parse_expr
+from sympy import binomial
 
-def gerar_resposta_open_source(pergunta):
-    url = f"https://router.huggingface.co/hf-inference/models/{HF_MODEL}"
+x = symbols('x')
 
-    headers = {
-        "Authorization": f"Bearer {HF_TOKEN}",
-        "Content-Type": "application/json"
-    }
+@app.route("/calcular", methods=["POST"])
+def calcular():
+    data = request.json
+    modo = data.get("modo")
+    expressao = data.get("expressao")
+    valor = data.get("valor")
+    n = data.get("n")
+    k = data.get("k")
 
-    payload = {
-        "inputs": f"Responda como especialista em matemática:\n{pergunta}",
-        "parameters": {
-            "max_new_tokens": 200,
-            "temperature": 0.5
-        }
-    }
+    try:
+        if modo == "derivada":
+            expr = parse_expr(expressao.replace("^","**"))
+            resultado = diff(expr, x)
 
-    response = requests.post(url, headers=headers, json=payload)
+        elif modo == "integral":
+            expr = parse_expr(expressao.replace("^","**"))
+            resultado = integrate(expr, x)
 
-    if response.status_code != 200:
-        raise Exception(response.text)
+        elif modo == "limite":
+            expr = parse_expr(expressao.replace("^","**"))
+            resultado = limit(expr, x, float(valor))
 
-    data = response.json()
+        elif modo == "equacao":
+            expr = parse_expr(expressao.replace("^","**"))
+            resultado = solve(expr, x)
 
-    if isinstance(data, dict) and "error" in data:
-        raise Exception(data["error"])
+        elif modo == "fatorial":
+            resultado = factorial(int(n))
 
-    return data[0]["generated_text"]
+        elif modo == "combinacao":
+            resultado = binomial(int(n), int(k))
+
+        elif modo == "permutacao":
+            resultado = factorial(int(n)) / factorial(int(n)-int(k))
+
+        else:
+            return jsonify({"erro":"Modo inválido"})
+
+        return jsonify({"resultado": str(resultado)})
+
+    except Exception as e:
+        return jsonify({"erro": str(e)})
