@@ -1,5 +1,2 @@
 flask
-flask-cors
-sympy
-requests
-gunicorn
+numpy
