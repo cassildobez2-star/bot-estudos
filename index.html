@@ -3,190 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <title>MatematicaBC</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
 <style>
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #f4f6f9;
-    display: flex;
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
-/* MENU LATERAL */
-.sidebar {
-    width: 220px;
-    height: 100vh;
-    background: #1f2937;
-    color: white;
-    padding-top: 20px;
-    position: fixed;
+body{
+    display:flex;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    min-height:100vh;
 }
 
-.sidebar h2 {
-    text-align: center;
-    margin-bottom: 30px;
+/* SIDEBAR */
+.sidebar{
+    width:250px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(15px);
+    padding:30px 20px;
+    border-right:1px solid rgba(255,255,255,0.1);
 }
 
-.sidebar button {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    background: none;
-    color: white;
-    text-align: left;
-    cursor: pointer;
-    font-size: 16px;
+.sidebar h1{
+    font-size:22px;
+    margin-bottom:40px;
+    text-align:center;
 }
 
-.sidebar button:hover {
-    background: #374151;
+.sidebar button{
+    width:100%;
+    padding:15px;
+    margin-bottom:15px;
+    border:none;
+    background:transparent;
+    color:white;
+    text-align:left;
+    border-radius:8px;
+    cursor:pointer;
+    transition:0.3s;
 }
 
-/* CONTEÚDO */
-.content {
-    margin-left: 220px;
-    padding: 40px;
-    flex: 1;
+.sidebar button:hover{
+    background:rgba(255,255,255,0.1);
 }
 
-.secao {
-    display: none;
+/* CONTENT */
+.content{
+    flex:1;
+    padding:50px;
 }
 
-.secao.ativa {
-    display: block;
+.secao{
+    display:none;
+    animation:fade 0.4s ease;
 }
 
-.card {
-    background: white;
-    padding: 25px;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+.secao.ativa{
+    display:block;
 }
 
-input {
-    padding: 10px;
-    width: 300px;
-    margin-top: 10px;
+@keyframes fade{
+    from{opacity:0; transform:translateY(10px);}
+    to{opacity:1; transform:translateY(0);}
 }
 
-button.calcular {
-    padding: 10px 20px;
-    margin-top: 15px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
+/* CARD */
+.card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(15px);
+    padding:30px;
+    border-radius:20px;
+    max-width:600px;
+    box-shadow:0 8px 25px rgba(0,0,0,0.3);
 }
 
-.resultado {
-    margin-top: 20px;
-    font-weight: bold;
+.card h2{
+    margin-bottom:20px;
+}
+
+input{
+    width:100%;
+    padding:15px;
+    border:none;
+    border-radius:10px;
+    margin-bottom:15px;
+    font-size:16px;
+}
+
+button.calcular{
+    padding:12px 25px;
+    border:none;
+    border-radius:10px;
+    background:#3b82f6;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button.calcular:hover{
+    background:#2563eb;
+}
+
+.resultado{
+    margin-top:20px;
+    font-size:18px;
+    font-weight:600;
 }
 
 </style>
 </head>
+
 <body>
 
 <div class="sidebar">
-    <h2>MatematicaBC</h2>
+    <h1>📘 MatematicaBC</h1>
     <button onclick="mostrarSecao('algebra')">Álgebra</button>
     <button onclick="mostrarSecao('calculo')">Cálculo</button>
-    <button onclick="mostrarSecao('geometria')">Geometria</button>
 </div>
 
 <div class="content">
 
-    <!-- ÁLGEBRA -->
-    <div id="algebra" class="secao ativa">
-        <div class="card">
-            <h2>Resolver Equação</h2>
-            <input id="exprAlgebra" placeholder="Ex: x^2 - 4">
-            <br>
-            <button class="calcular" onclick="calcular('equacao','exprAlgebra')">
-                Calcular
-            </button>
-            <div id="resAlgebra" class="resultado"></div>
-        </div>
+<div id="algebra" class="secao ativa">
+    <div class="card">
+        <h2>Resolver Equação</h2>
+        <input id="exprAlgebra" placeholder="Ex: x^2 - 4">
+        <button class="calcular" onclick="calcular('equacao','exprAlgebra','resAlgebra')">
+            Calcular
+        </button>
+        <div id="resAlgebra" class="resultado"></div>
     </div>
+</div>
 
-    <!-- CÁLCULO -->
-    <div id="calculo" class="secao">
-        <div class="card">
-            <h2>Derivada</h2>
-            <input id="exprDerivada" placeholder="Ex: x^2 + 3x">
-            <br>
-            <button class="calcular" onclick="calcular('derivada','exprDerivada')">
-                Calcular
-            </button>
-            <div id="resDerivada" class="resultado"></div>
-        </div>
-
-        <div class="card" style="margin-top:20px;">
-            <h2>Integral</h2>
-            <input id="exprIntegral" placeholder="Ex: x^2">
-            <br>
-            <button class="calcular" onclick="calcular('integral','exprIntegral')">
-                Calcular
-            </button>
-            <div id="resIntegral" class="resultado"></div>
-        </div>
+<div id="calculo" class="secao">
+    <div class="card">
+        <h2>Derivada</h2>
+        <input id="exprDerivada" placeholder="Ex: x^2 + 3x">
+        <button class="calcular" onclick="calcular('derivada','exprDerivada','resDerivada')">
+            Calcular
+        </button>
+        <div id="resDerivada" class="resultado"></div>
     </div>
-
-    <!-- GEOMETRIA -->
-    <div id="geometria" class="secao">
-        <div class="card">
-            <h2>Distância entre dois pontos</h2>
-            <input id="ponto1" placeholder="Ex: 0,0">
-            <input id="ponto2" placeholder="Ex: 3,4">
-            <br>
-            <button class="calcular" onclick="distancia()">
-                Calcular
-            </button>
-            <div id="resGeo" class="resultado"></div>
-        </div>
-    </div>
+</div>
 
 </div>
 
 <script>
 
-function mostrarSecao(id) {
-    document.querySelectorAll('.secao').forEach(secao => {
-        secao.classList.remove('ativa');
+function mostrarSecao(id){
+    document.querySelectorAll('.secao').forEach(sec=>{
+        sec.classList.remove('ativa');
     });
     document.getElementById(id).classList.add('ativa');
 }
 
-async function calcular(modo, inputId) {
-    const expressao = document.getElementById(inputId).value;
+async function calcular(modo,inputId,resultadoId){
 
-    const response = await fetch("https://SEU_BACKEND_RAILWAY_URL/calcular", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ modo: modo, expressao: expressao })
+    const expressao=document.getElementById(inputId).value;
+
+    const response=await fetch("https://bot-estudos-production.up.railway.app/calcular",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({modo:modo,expressao:expressao})
     });
 
-    const data = await response.json();
+    const data=await response.json();
 
-    document.getElementById("res" + inputId.replace("expr",""))
-        .innerText = data.resultado || data.erro;
-}
-
-function distancia() {
-    const p1 = document.getElementById("ponto1").value.split(",");
-    const p2 = document.getElementById("ponto2").value.split(",");
-
-    const dx = p2[0] - p1[0];
-    const dy = p2[1] - p1[1];
-
-    const dist = Math.sqrt(dx*dx + dy*dy);
-
-    document.getElementById("resGeo").innerText = "Distância: " + dist;
+    document.getElementById(resultadoId).innerText=
+        data.resultado || data.erro;
 }
 
 </script>
 
 </body>
-                </html>
+    </html>
